@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+"""Launcher that always finds a Python interpreter with PyGObject.
+
+System Python on every distro that ships GNOME has `gi`; a virtualenv or a
+pyenv shim in front of it usually does not.  Rather than drag users into
+dependency surgery, re-exec with the system interpreter when needed.
+"""
+
+import os
+import sys
+
+try:
+    import gi  # noqa: F401
+except ModuleNotFoundError:
+    for candidate in ("/usr/bin/python3", "/usr/local/bin/python3", "/bin/python3"):
+        if not os.path.exists(candidate):
+            continue
+        if os.path.realpath(candidate) == os.path.realpath(sys.executable):
+            continue
+        os.execv(candidate, [candidate, os.path.realpath(__file__), *sys.argv[1:]])
+    sys.exit(
+        "gwa: PyGObject is required (install python3-gobject / python-gobject)"
+    )
+
+ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+from gwa.cli import main  # noqa: E402
+
+raise SystemExit(main())

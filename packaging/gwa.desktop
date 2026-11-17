@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=GWA
+Comment=Wayland desktop agent (screen capture and control through the desktop portal)
+Exec=gwa daemon --quiet
+Icon=utilities-system-monitor-symbolic
+Terminal=false
+NoDisplay=true
+Categories=Utility;
+X-GNOME-UsesNotifications=true

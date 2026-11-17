@@ -1,0 +1,18 @@
+[Unit]
+Description=GWA Wayland desktop agent (portal control session)
+Documentation=https://github.com/yourname/gnome-wayland-agent
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/gwa daemon --quiet
+Restart=on-failure
+RestartSec=3
+# The portal session dies with the D-Bus connection, so keep it in the
+# graphical session's bus rather than the user manager's private one.
+PassEnvironment=WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
+TimeoutStopSec=5
+
+[Install]
+WantedBy=graphical-session.target
