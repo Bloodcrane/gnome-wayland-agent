@@ -47,7 +47,7 @@ Going through it means:
 Install (the script also checks all of this):
 
 ```bash
-git clone <this repo> gnome-wayland-agent
+git clone https://github.com/Bloodcrane/gnome-wayland-agent.git
 cd gnome-wayland-agent
 ./install.sh                 # symlink into ~/.local/bin, install .desktop
 ./install.sh --service       # optional: systemd user unit at login
