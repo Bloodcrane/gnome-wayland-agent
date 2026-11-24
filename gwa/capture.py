@@ -61,13 +61,20 @@ def grab(
     cmd = _base(node_id, fd) + ["num-buffers=1", "!", "videoconvert"]
     if max_width and (not size or not size[0]):
         raise CaptureError("downscaling needs the stream size from the portal")
-    if max_width and size and size[0] > max_width:
+    if size and size[0] and size[1]:
+        # Always pin the output to the stream size (or max_width below it).
+        # With fractional scaling the compositor sends frames at the panel's
+        # physical resolution (e.g. 3840x2160 at 125%) while the stream size,
+        # and so the click space, is logical (3072x1728). Without this the PNG
+        # would not match the coordinate contract. videoscale is a passthrough
+        # when the frame already has this size.
+        width = min(int(max_width), size[0]) if max_width else size[0]
         # Compute both dimensions up front: letting videoscale fixate a width
         # alone overflows on some caps and yields a 1-pixel-tall frame.
-        height = max(1, round(size[1] * max_width / size[0]))
+        height = max(1, round(size[1] * width / size[0]))
         cmd += [
             "!", "videoscale", "add-borders=false", "!",
-            f"video/x-raw,width={int(max_width)},height={int(height)},"
+            f"video/x-raw,width={int(width)},height={int(height)},"
             "pixel-aspect-ratio=1/1",
         ]
     cmd += ["!", "pngenc", "snapshot=true", "!", "filesink", f"location={out_path}"]
